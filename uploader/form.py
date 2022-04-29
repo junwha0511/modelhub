@@ -1,11 +1,11 @@
-### Implement train logic with modifiable parameter (max: p10)
-def train_model(input, p1, p2, p3, ...):
+### Implement train logic with modifiable parameter list
+def train_model(input, params):
     ### preprocess
 
     model = Sequential([
         '''
         Example:
-        keras.layers.Conv2D(256, 3, activation="relu", padding=p3) <- here, user can modify p3
+        keras.layers.Conv2D(256, 3, activation="relu", padding=params[3]) <- here, user can modify params[3]
         '''
         ### Implement model here
     ])
@@ -21,12 +21,10 @@ def test_model(input):
 ### Implement running logic 
 def run_train():
     input = open("./dataset.pickle") # Here you must use pickle
-    p1 = ...
-    p2 = ...
-    ...
+    params = [ ... ] # Put default parameters here
     
     ### we will intercept here
-    train_model(input, p1, p2, p3, ...)
+    train_model(input, params)
 
 def run_test(img):
     return test_model(img)

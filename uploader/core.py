@@ -6,7 +6,7 @@ CODE_DIR = "./example.py"
 START_STR = "Sequential(["
 
 layers = []
-param_names = ["p1", "p2", "p3", "p4", "p5", "p6", "p7", "p8", "p9", "p10"] # Parameter names in top function
+param_names = [] # Parameter names in top function
 param_values = {}
 
 ### Code Parsing ###
@@ -20,6 +20,14 @@ if layer_start_idx == -1:
     exit()
 layer_start_idx += len(START_STR)
 
+# Find # of parameter 
+param_symbol = "params = ["
+start = code.find(param_symbol)+len(param_symbol)
+end = start+code[start:].find("]")
+n_params = len(code[start:end].split(","))
+for i in range(0, n_params):
+    param_names.append("param[{}]".format(i))
+    
 angle_bracket_cnt = 0
 square_bracket_cnt = 1
 i = layer_start_idx
