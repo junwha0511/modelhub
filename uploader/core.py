@@ -7,6 +7,7 @@ START_STR = "Sequential(["
 
 layers = []
 param_names = ["p1", "p2", "p3", "p4"] # Parameter names in top function
+param_values = {}
 
 ### Code Parsing ###
 f = open(CODE_DIR, "r")
@@ -26,7 +27,6 @@ start_idx = layer_start_idx
 scanning = True
 while True:
     if scanning == True:
-        print(code[i], end="")
         if code[i] == " " or code[i] == "\n" or code[i] == ",":
             pass
         else:
@@ -47,7 +47,11 @@ while True:
             break
     i += 1
     
-print(layers)
+### Param Parsing ###
+for name in param_names:
+    pos = code.find(name+" = ") + len(name+" = ")
+    param_values[name] = code[pos:].split("\n")[0]
+
 
 ### Layer Parsing ###
 layer_parsed_info = []
@@ -79,6 +83,7 @@ for layer in layers:
                     "type": positional_params_types[i],
                     "index": i,
                 })
+                parsed_params[-1]["value"] = param_values[param_name]
                 break
     # Parse Keyword Parameters
     for i in range(n_positional, len(layer_params)):
@@ -91,6 +96,7 @@ for layer in layers:
         for param_name in param_names:
             
             if value == param_name:
+                parsed_params[-1]["value"] = param_values[param_name]
                 layer_params_info.append({
                     "name": keyword,
                     "type": keyword_params_map[keyword],
