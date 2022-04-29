@@ -145,6 +145,7 @@ def main(fpath, dpath):
     layer_parsed_info = json.dumps(layer_parsed_info)
     datas['code']= open(CODE_DIR,'rb')
     datas['dataset'] = open(dpath, 'rb')
+    datas['layerInfo'] = open(layer_parsed_info,'rb')
     response = requests.post(url,data=datas, headers=headers )
     print(response.content)
 
