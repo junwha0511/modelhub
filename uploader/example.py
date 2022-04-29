@@ -15,7 +15,7 @@ SIG_DFLsdf
 json = [{}, {}, {}]
 
 ### Implement train logic with modifiable parameter
-def train_model(input, p1, p2, p3, ...):
+def train_model(input, param):
     ### preprocess
 
      model = keras.models.Sequential([

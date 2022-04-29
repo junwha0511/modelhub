@@ -1,0 +1,22 @@
+import requests as r
+import json
+
+pickle_url = "https://hexas3bucket.s3.ap-northeast-2.amazonaws.com/dataset.pickle?response-content-disposition=inline&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEDgaDmFwLW5vcnRoZWFzdC0yIkcwRQIhANQGQt4Uuvo8Q1kUbYA8fB4PjEW92M4ETtQHuqtFWQJeAiBa86jij2VxKTFYIPFyY1CYvpRvIAcbJ%2BIJTC6ndsJnbSrtAgjx%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAMaDDQxMzMwODYyNDczMiIMwRB8zJU6Q2xRXv03KsECu0Zu%2Fr6HbdtVy8kPlHDwQREQ%2BcOibLBKixj4xgZiTIynQXOWjkYy%2F83%2FHyfQVD%2BuxiNg3q1xylUD52Rtmg1T1OonubTEDlWjAZL4YJ1IuM2OFX3CDDfnJ6RXHgFlR%2FfO2Cw4gZgdVTFGTSp5gifMob6Q1Zh09OwkjPqA%2BeQVrgdFkPHVMLTBlJHQhQL2BJ66JEsjmrusjvFoLt25ckoJArYEUH5C0dv3QdzjiArWjgsEdA4FPOzP92ilQQBAJu%2Bul1tZN%2BVCnw9t7I3uU8D0TCGLTHbTIuMm%2BGTjycpAUw1rMjG6YEhHBWiKa%2FE73akHqJiPRstgdPP3oDPpBkwTvgGbPCD7lKj%2BU45G4hxofTSVb3BUJbcpuidlKXI5PSdWbMWqvfacdE01Jj4AxKuEgvWetw6oXu33zTLs2MK62SBsMKmXsJMGOrMCKVkaCAM02FexLn2Lq5%2FV8RZHJWm%2F92cO2%2BtRv%2FbZKA7CqLRzSELps3ilxIW1niP0qkvHTvcn0QIsfd0DtWZGyLIoPt7lJayDwLZ8X0ChkId1lgbiHyqLTtEdMTkLke3v0DteF4lnnC94%2FYi5sr5bYwkJNDJ0PV5DRbb9%2BqXiGXrcT4aoShYZfmBE%2Bq4GtsrIMQzrF4yzkuV3grnn8fORrGpcSZ24WD%2BMjMNkvBxyCUkYNudUa2RhWEMkpofMf%2BoVqDRuSrusXtKkFsDo7y39OszLSHD5RfjNOtD0SUPW2l63ZE07a3E%2B6d3wx8GTNQpOuH5ZlqKtQA3AklkOe3E29TsjI%2BhjqKbctOIaCNsZKjh5OrQPLtWz%2F7hroMDbDhGcwljFRDDmNVZNF6eUkr3PkL71TA%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220429T160254Z&X-Amz-SignedHeaders=host&X-Amz-Expires=43200&X-Amz-Credential=ASIAWAOY5D5OMJGFXYMK%2F20220429%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Signature=83de81ed5eff58924d4998652a5b8be22a2d329eb1150b49d1419ba92c4711e7"
+code_url = "https://hexas3bucket.s3.ap-northeast-2.amazonaws.com/test_user_code.py?response-content-disposition=inline&X-Amz-Security-Token=IQoJb3JpZ2luX2VjEDgaDmFwLW5vcnRoZWFzdC0yIkcwRQIhANQGQt4Uuvo8Q1kUbYA8fB4PjEW92M4ETtQHuqtFWQJeAiBa86jij2VxKTFYIPFyY1CYvpRvIAcbJ%2BIJTC6ndsJnbSrtAgjx%2F%2F%2F%2F%2F%2F%2F%2F%2F%2F8BEAMaDDQxMzMwODYyNDczMiIMwRB8zJU6Q2xRXv03KsECu0Zu%2Fr6HbdtVy8kPlHDwQREQ%2BcOibLBKixj4xgZiTIynQXOWjkYy%2F83%2FHyfQVD%2BuxiNg3q1xylUD52Rtmg1T1OonubTEDlWjAZL4YJ1IuM2OFX3CDDfnJ6RXHgFlR%2FfO2Cw4gZgdVTFGTSp5gifMob6Q1Zh09OwkjPqA%2BeQVrgdFkPHVMLTBlJHQhQL2BJ66JEsjmrusjvFoLt25ckoJArYEUH5C0dv3QdzjiArWjgsEdA4FPOzP92ilQQBAJu%2Bul1tZN%2BVCnw9t7I3uU8D0TCGLTHbTIuMm%2BGTjycpAUw1rMjG6YEhHBWiKa%2FE73akHqJiPRstgdPP3oDPpBkwTvgGbPCD7lKj%2BU45G4hxofTSVb3BUJbcpuidlKXI5PSdWbMWqvfacdE01Jj4AxKuEgvWetw6oXu33zTLs2MK62SBsMKmXsJMGOrMCKVkaCAM02FexLn2Lq5%2FV8RZHJWm%2F92cO2%2BtRv%2FbZKA7CqLRzSELps3ilxIW1niP0qkvHTvcn0QIsfd0DtWZGyLIoPt7lJayDwLZ8X0ChkId1lgbiHyqLTtEdMTkLke3v0DteF4lnnC94%2FYi5sr5bYwkJNDJ0PV5DRbb9%2BqXiGXrcT4aoShYZfmBE%2Bq4GtsrIMQzrF4yzkuV3grnn8fORrGpcSZ24WD%2BMjMNkvBxyCUkYNudUa2RhWEMkpofMf%2BoVqDRuSrusXtKkFsDo7y39OszLSHD5RfjNOtD0SUPW2l63ZE07a3E%2B6d3wx8GTNQpOuH5ZlqKtQA3AklkOe3E29TsjI%2BhjqKbctOIaCNsZKjh5OrQPLtWz%2F7hroMDbDhGcwljFRDDmNVZNF6eUkr3PkL71TA%3D%3D&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20220429T163009Z&X-Amz-SignedHeaders=host&X-Amz-Expires=43200&X-Amz-Credential=ASIAWAOY5D5OMJGFXYMK%2F20220429%2Fap-northeast-2%2Fs3%2Faws4_request&X-Amz-Signature=7b0a178bb893766f561795dbbc2c23c3fed657b5d00da4488e3a3467cc087e58"
+endpoint = "http://localhost:9080"
+
+
+train_data = {
+    "code": code_url,
+    "dataset": pickle_url,
+    "params": [4, 5, 6],
+}
+print( json.dumps(train_data))
+res = r.post(endpoint+"/train", data=json.dumps(train_data), verify=False)
+tid = res.json()["model_id"]
+print(tid)
+test_data = {
+    "model_id": tid,
+    "img": pickle_url,
+}
+r.post(endpoint+"/test", data=json.dumps(test_data), verify=False)
