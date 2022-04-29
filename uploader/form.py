@@ -1,4 +1,4 @@
-### Implement train logic with modifiable parameter
+### Implement train logic with modifiable parameter (max: p10)
 def train_model(input, p1, p2, p3, ...):
     ### preprocess
 
