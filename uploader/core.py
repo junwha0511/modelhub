@@ -14,7 +14,7 @@ param_values = {}
 datas = {
     'email': ' ',
     'password': ' ',
-    'layerInfo': open('modelhub//uploader//layer_info.py', 'rb'),
+    'layerInfo':'',
     'code': ' ',
     'dataset': ' ',
     'modelName': ' ',
