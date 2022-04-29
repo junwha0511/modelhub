@@ -18,6 +18,12 @@ datas = {
     'code': ' ',
     'dataset': ' ',
     'modelName': ' ',
+    'dataName': ' '
+}
+files = {
+    'layerInfo':'',
+    'code': ' ',
+    'dataset': ' ',
 }
 
 url = "https://mrugbnij4jb6jfurds4mub6j2a.appsync-api.ap-northeast-2.amazonaws.com/upload"
@@ -30,8 +36,9 @@ datasetpath = ''
 
 @click.command()
 @click.argument('fpath', type=click.Path(exists=True))
+@click.argument('dname')
 @click.argument('dpath', type=click.Path(exists=True))
-def main(fpath, dpath):
+def main(fpath, dname, dpath):
     CODE_DIR= fpath
 
     f = open(CODE_DIR, "r")
@@ -143,11 +150,11 @@ def main(fpath, dpath):
             "params": parsed_params,
         })
     layer_parsed_info = json.dumps(layer_parsed_info)
-    datas['code']= open(CODE_DIR,'rb')
-    datas['dataset'] = open(dpath, 'rb')
-    datas['layerInfo'] = open(layer_parsed_info,'rb')
-    response = requests.post(url,data=datas, headers=headers )
-    print(response.content)
+    files['code']= open(CODE_DIR,'rb')
+    files['dataset'] = open(dpath, 'rb')
+    files['layerInfo'] = open(layer_parsed_info,'rb')
+    datas['dataName'] = dname
+    response = requests.post(url,files=files,data=datas, headers=headers)
 
 
 if __name__ == '__main__':
