@@ -52,7 +52,7 @@ print(layers)
 ### Layer Parsing ###
 layer_parsed_info = []
 for layer in layers:
-    print(layer)
+    parsed_params = []
     splitted_layer = layer.split("(")
     layer_name = splitted_layer[0]
     layer_params = "".join(splitted_layer[1:])
@@ -70,6 +70,7 @@ for layer in layers:
 
     # Parse Positional Parameters
     for i in range(n_positional):
+        parsed_params.append({"name": positional_params_names[i], "value": layer_params[i]})
         for param_name in param_names:
             if layer_params[i] == param_name:
                 positional_params_types[i]
@@ -83,12 +84,13 @@ for layer in layers:
     for i in range(n_positional, len(layer_params)):
         if layer_params[i].strip(" ") == "":
             continue
-
+        (keyword, value) = layer_params[i].split("=")
+        keyword = keyword.strip(" ")
+        value = value.strip(" ")
+        parsed_params.append({"name": keyword, "value": value})
         for param_name in param_names:
-            (keyword, _param_name) = layer_params[i].split("=")
-            keyword = keyword.strip(" ")
-            _param_name = _param_name.strip(" ")
-            if _param_name == param_name:
+            
+            if value == param_name:
                 layer_params_info.append({
                     "name": keyword,
                     "type": keyword_params_map[keyword],
@@ -97,7 +99,8 @@ for layer in layers:
 
     layer_parsed_info.append({
         "name": layer_name,
-        "parameters": layer_params_info,
+        "modifiable_params_info": layer_params_info,
+        "params": parsed_params,
     })
 
 layer_parsed_info = json.dumps(layer_parsed_info)
