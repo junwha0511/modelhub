@@ -1,3 +1,5 @@
+import pickle
+
 ### Implement train logic with modifiable parameter list
 def train_model(input, params):
     ### preprocess
@@ -20,10 +22,15 @@ def test_model(input):
 
 ### Implement running logic 
 def run_train():
-    input = open("./dataset.pickle") # Here you must use pickle
+    f = open("./dataset.pickle", "rb") # Here you must use pickle
+    input = pickle.load(f)
+    f.close()
+
     params = [ ... ] # Put default parameters here
     
-    ### we will intercept here
+    ### we will intercept here, don't remove this region!
+    INTERCEPT_REGION
+    ###
     train_model(input, params)
 
 def run_test(img):
