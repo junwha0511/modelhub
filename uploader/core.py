@@ -12,33 +12,25 @@ layers = []
 param_names = [] # Parameter names in top function
 param_values = {}
 datas = {
-    'email': ' ',
-    'password': ' ',
-    'layerInfo':'',
-    'code': ' ',
-    'dataset': ' ',
-    'modelName': ' ',
-    'dataName': ' '
 }
 files = {
-    'layerInfo':'',
-    'code': ' ',
-    'dataset': ' ',
+ 
 }
 
-url = "https://mrugbnij4jb6jfurds4mub6j2a.appsync-api.ap-northeast-2.amazonaws.com/upload"
+# url = "http://localhost:9080"
 
 
-headers = {'Constent-Type':'x-www-form-urlencoded'}
-response = requests.post(url,data=datas, headers=headers )
-filepath  = ''
-datasetpath = ''
+# headers = {'content-type':'multipart/form-data'}
+# response = requests.post(url,data=datas, headers=headers )
+# filepath  = ''
+# datasetpath = ''
 
 @click.command()
 @click.argument('fpath', type=click.Path(exists=True))
-@click.argument('dname')
 @click.argument('dpath', type=click.Path(exists=True))
-def main(fpath, dname, dpath):
+@click.argument('dname')
+@click.argument('mid')
+def main(fpath, dpath, dname, mid):
     CODE_DIR= fpath
 
     f = open(CODE_DIR, "r")
@@ -49,17 +41,25 @@ def main(fpath, dname, dpath):
     layer_start_idx = code.find(START_STR) 
     if layer_start_idx == -1:
         exit()
-    layer_start_idx += len(START_STR)
-
-    
+    layer_start_idx += len(START_STR)  
     # Find # of parameter 
     param_symbol = "params = ["
     start = code.find(param_symbol)+len(param_symbol)
-    end = start+code[start:].find("]")
-    n_params = len(code[start:end].split(","))
+    end = start+code[start:].find("# Put default parameters here")
+    n_params = 11 #len(code[start:end].split(","))
     for i in range(0, n_params):
-        param_names.append("param[{}]".format(i))
+        param_names.append("params[{}]".format(i))
+
+    ### Param Parsing ###
+    # for name in param_names:
+    #     pos = code.find(name+" = ") + len(name+" = ")
         
+    param_values_value = [ 0.5,0.5, "same","same","same","same","same", 2,2,2, [28,28,1]]
+
+    
+    for i in range((n_params)):
+        param_values[param_names[i]] = param_values_value[i]
+
     angle_bracket_cnt = 0
     square_bracket_cnt = 1
     i = layer_start_idx
@@ -88,10 +88,7 @@ def main(fpath, dname, dpath):
                 break
         i += 1
         
-    ### Param Parsing ###
-    for name in param_names:
-        pos = code.find(name+" = ") + len(name+" = ")
-        param_values[name] = code[pos:].split("\n")[0]
+
 
 
     ### Layer Parsing ###
@@ -103,7 +100,6 @@ def main(fpath, dname, dpath):
         layer_params = "".join(splitted_layer[1:])
         layer_name = layer_name.split(".")[-1]
         layer_params = layer_params.strip("(").strip(")").split(",")
-        
         layer_params_info = []
 
         # try:
@@ -117,12 +113,13 @@ def main(fpath, dname, dpath):
         for i in range(n_positional):
             parsed_params.append({"name": positional_params_names[i], "value": layer_params[i]})
             for param_name in param_names:
-                if layer_params[i] == param_name:
+                if layer_params[i].strip(" ") == param_name:
+                    
                     positional_params_types[i]
                     layer_params_info.append({
                         "name": positional_params_names[i],
                         "type": positional_params_types[i],
-                        "index": i,
+                        "index": param_names.index(param_name),
                     })
                     parsed_params[-1]["value"] = param_values[param_name]
                     break
@@ -135,13 +132,13 @@ def main(fpath, dname, dpath):
             value = value.strip(" ")
             parsed_params.append({"name": keyword, "value": value})
             for param_name in param_names:
-                
                 if value == param_name:
+                    # print(param_names.index(param_name))
                     parsed_params[-1]["value"] = param_values[param_name]
                     layer_params_info.append({
                         "name": keyword,
                         "type": keyword_params_map[keyword],
-                        "index": i,
+                        "index": param_names.index(param_name),
                     })
 
         layer_parsed_info.append({
@@ -149,13 +146,30 @@ def main(fpath, dname, dpath):
             "modifiable_params_info": layer_params_info,
             "params": parsed_params,
         })
-    layer_parsed_info = json.dumps(layer_parsed_info)
-    files['code']= open(CODE_DIR,'rb')
-    files['dataset'] = open(dpath, 'rb')
-    files['layerInfo'] = open(layer_parsed_info,'rb')
-    datas['dataName'] = dname
-    response = requests.post(url,files=files,data=datas, headers=headers)
+    layer_parsed_info = (layer_parsed_info)
+   
+    # m = MultipartEncoder(
+    # fields={'field0': 'value', 'field1': 'value',
+    #         'code': (CODE_DIR.split("/")[-1], open(CODE_DIR,'rb'), 'text/plain'),
+    #         'data': (dname, open(dpath, 'rb'), 'text/plain'),
+    # })
+    
+    # response = requests.post(url+"/upload", data=m,
+    #               headers={'content-type': m.content_type})
 
+    # json_data = response.json()
+    for layer in layer_parsed_info:
+        print(layer)
+    # print(layer_parsed_info)
+    # datas['layer_info'] = layer_parsed_info
+    # datas['data_name'] = dname
+    # datas["code_dir"] = CODE_DIR
+    # datas["data_dir"] = dpath
+    # datas["mid"] = mid
+    
+    # response = requests.post(url+"/construct", data=datas)
+
+    # print(response.content)
 
 if __name__ == '__main__':
     main()
